@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -126,18 +127,20 @@ public class MovieService {
         return movieRepository.existsByIdMovie(idMovie);
     }
 
+    @Transactional
     public MovieEntity saveMovie(MovieEntity movieEntity) {
         validateMovieEntity(movieEntity);
         return movieRepository.save(movieEntity);
     }
 
+    @Transactional
     public void deleteMovie(int idMovie) {
         validateIdMovie(idMovie);
         validateMovieExists(idMovie);
-
         movieRepository.deleteById(idMovie);
     }
 
+    @Transactional
     public MovieEntity updateMovie(int idMovie, MovieEntity movieEntity) {
         validateMovieEntity(movieEntity);
         validateIdMovie(idMovie);

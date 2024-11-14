@@ -24,6 +24,7 @@
 
   <modules>
     <module>microservice-movies</module>
+    <module>microservice-authentication</module>
   </modules>
 
   <dependencyManagement>
