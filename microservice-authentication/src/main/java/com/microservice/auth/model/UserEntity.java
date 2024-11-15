@@ -14,6 +14,11 @@ import java.util.UUID;
 @Table(name = "users")
 public class UserEntity {
 
+    public enum Role {
+        ADMIN,
+        USER
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id_user", nullable = false)
@@ -34,10 +39,10 @@ public class UserEntity {
     @Column(nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false)
-    private Boolean enabled = true;
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private boolean enabled = true;
 
-    @ManyToOne
-    @JoinColumn(name = "id_role", referencedColumnName = "id_role", nullable = false)
-    private RoleEntity role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 }

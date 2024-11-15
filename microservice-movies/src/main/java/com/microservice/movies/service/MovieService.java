@@ -8,7 +8,6 @@ import com.microservice.movies.model.MovieEntity;
 import com.microservice.movies.repository.MovieRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -154,6 +153,6 @@ public class MovieService {
                     existingMovie.setGenreEntity(movieEntity.getGenreEntity());
                     return movieRepository.save(existingMovie);
                 })
-                .orElseThrow(() -> new IllegalArgumentException("The movie with ID " + idMovie + " does not exist."));
+                .orElseThrow(() -> new IllegalArgumentException("Error updating the movie with id " + idMovie));
     }
 }
