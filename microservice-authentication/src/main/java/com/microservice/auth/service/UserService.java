@@ -1,11 +1,10 @@
 package com.microservice.auth.service;
 
-import com.microservice.auth.dto.RegisterUserDTO;
-import com.microservice.auth.exception.InvalidUserException;
-import com.microservice.auth.exception.UserNotFoundException;
+import com.microservice.auth.dto.UserDTO;
 import com.microservice.auth.model.UserEntity;
 import com.microservice.auth.repository.UserRepository;
-import jakarta.validation.ValidationException;
+import com.microservice.auth.validation.UserValidation;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -17,73 +16,72 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+    private final UserValidation userValidation;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ModelMapper modelMapper, UserValidation userValidation) {
         this.userRepository = userRepository;
-    }
-
-    private void validatePageAndSize(int page, int size) {
-        if (page < 0 || size <= 0) {
-            throw new ValidationException("Page number cannot be negative and size must be greater than zero.");
-        }
-    }
-
-    private void validateUserExists(UUID idUser) {
-        if (idUser == null) {
-            throw new ValidationException("User ID must be different of null.");
-        }
-        if (!userRepository.existsByIdUser(idUser)) {
-            throw new UserNotFoundException("The user with ID " + idUser + " does not exist.");
-        }
-    }
-
-    private void validateUserRegister(RegisterUserDTO registerUserDTO) {
-        if (registerUserDTO == null) {
-            throw new InvalidUserException("User must be different of null.");
-        }
-        if (registerUserDTO.getUsername() == null || registerUserDTO.getUsername().isEmpty()) {
-            throw new InvalidUserException("Username must be different of null or empty.");
-        }
-        if (registerUserDTO.getPassword() == null || registerUserDTO.getPassword().isEmpty()) {
-            throw new InvalidUserException("Password must be different of null or empty.");
-        }
+        this.modelMapper = modelMapper;
+        this.userValidation = userValidation;
     }
 
     public Page<UserEntity> findAllUsers(int page, int size) {
-        validatePageAndSize(page, size);
+        userValidation.validatePageAndSize(page, size);
         return userRepository.findAll(PageRequest.of(page, size));
     }
 
     public UserEntity findUserById(UUID idUser) {
-        validateUserExists(idUser);
+        userValidation.validateUserExists(idUser);
         return userRepository.findByIdUser(idUser);
     }
 
-    public Page<UserEntity> findUsersByRole(String role, int page, int size) {
-        validatePageAndSize(page, size);
+    public UserEntity getUserByEmail(String email) {
+        userValidation.validateUserExistsByEmail(userRepository, email);
+        return userRepository.findByEmail(email);
+    }
+
+    public Page<UserEntity> getUsersByRole(String role, int page, int size) {
+        userValidation.validatePageAndSize(page, size);
         return userRepository.findAllUserEntitiesByRoleContainingIgnoreCase(role, PageRequest.of(page, size));
     }
 
-    public Page<UserEntity> findUsersByEnabled(boolean enabled, int page, int size) {
-        validatePageAndSize(page, size);
+    public Page<UserEntity> getUsersByEnabled(boolean enabled, int page, int size) {
+        userValidation.validatePageAndSize(page, size);
         return userRepository.findAllUserEntitiesByEnabled(enabled, PageRequest.of(page, size));
     }
 
     @Transactional
-    public UserEntity saveUser(RegisterUserDTO registerUserDTO) {
-        validateUserRegister(registerUserDTO);
+    public void registerUser(UserDTO registerUserDTO) {
+        userValidation.validateUserRegister(registerUserDTO);
         UserEntity userEntity = convertToEntity(registerUserDTO);
-        return userRepository.save(userEntity);
+        userRepository.save(userEntity);
     }
 
-    private UserEntity convertToEntity(RegisterUserDTO registerUserDTO) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(registerUserDTO.getUsername());
-        userEntity.setLastName(registerUserDTO.getLastName());
-        userEntity.setEmail(registerUserDTO.getEmail());
-        userEntity.setPhone(registerUserDTO.getPhone());
-        userEntity.setPassword(registerUserDTO.getPassword());
+    @Transactional
+    public void changeRoleToAdmin(String email) {
+        userValidation.validateUserExistsByEmail(userRepository, email);
+        userValidation.validateIfUserIsAdmin(email);
+        userRepository.changeRoleToAdmin(email);
+    }
 
+    @Transactional
+    public UserEntity updateUser(String email, UserDTO userDTO) {
+        userValidation.validateUserExistsByEmail(userRepository, email);
+        UserEntity existingUser = userRepository.findByEmail(email);
+        modelMapper.map(userDTO, existingUser);
+        return userRepository.save(existingUser);
+    }
+
+    @Transactional
+    public UserEntity disableUserAccount(String email) {
+        userValidation.validateUserExistsByEmail(userRepository, email);
+        UserEntity existingUser = userRepository.findByEmail(email);
+        existingUser.setEnabled(false);
+        return userRepository.save(existingUser);
+    }
+
+    private UserEntity convertToEntity(UserDTO registerUserDTO) {
+        UserEntity userEntity = modelMapper.map(registerUserDTO, UserEntity.class);
         userEntity.setRole(UserEntity.Role.USER);
         userEntity.setEnabled(true);
         return userEntity;

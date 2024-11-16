@@ -32,4 +32,15 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidEmailException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiError> handleInvalidEmail(InvalidEmailException exception) {
+        ApiError apiError = new ApiError(
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(),
+                List.of("The email is invalid", exception.getMessage())
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
 }

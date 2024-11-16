@@ -1,10 +1,11 @@
 package com.microservice.auth.controller;
 
-import com.microservice.auth.dto.RegisterUserDTO;
+import com.microservice.auth.dto.ChangeRoleDTO;
+import com.microservice.auth.dto.UserDTO;
 import com.microservice.auth.model.UserEntity;
 import com.microservice.auth.service.UserService;
-import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,51 @@ public class UserController {
         return ResponseEntity.ok(movies);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<RegisterUserDTO> addUser(@Valid @RequestBody RegisterUserDTO registerUserDTO) {
-        userService.saveUser(registerUserDTO);
-        return ResponseEntity.ok(registerUserDTO);
+    @GetMapping("/search-by-email")
+    public ResponseEntity<UserEntity> getUserByEmail(@RequestParam String email) {
+        UserEntity user = userService.getUserByEmail(email);
+        return ResponseEntity.ok(user);
     }
+
+    @GetMapping("/search-by-role")
+    public ResponseEntity<Page<UserEntity>> getUsersByRole(@RequestParam String role,
+                                                           @RequestParam(defaultValue = "0") int page,
+                                                           @RequestParam(defaultValue = "10") int elements) {
+        Page<UserEntity> users = userService.getUsersByRole(role, page, elements);
+        return ResponseEntity.ok(users);
+    }
+
+    @GetMapping("/search-by-enabled")
+    public ResponseEntity<Page<UserEntity>> getUsersByEnabled(@RequestParam boolean enabled,
+                                                              @RequestParam(defaultValue = "0") int page,
+                                                              @RequestParam(defaultValue = "10") int elements) {
+        Page<UserEntity> users = userService.getUsersByEnabled(enabled, page, elements);
+        return ResponseEntity.ok(users);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO registerUserDTO) {
+        userService.registerUser(registerUserDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/change-role")
+    public ResponseEntity<String> changeRoleToAdmin(@RequestBody ChangeRoleDTO changeRoleDTO) {
+        userService.changeRoleToAdmin(changeRoleDTO.getEmail());
+        return ResponseEntity.status(HttpStatus.OK).body("Role changed to ADMIN successfully.");
+    }
+
+    @PutMapping("/update/{email}")
+    public ResponseEntity<UserEntity> updateUser(@PathVariable String email, @RequestBody UserDTO userDTO) {
+        UserEntity updatedUser = userService.updateUser(email, userDTO);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @PutMapping("/disable-account/{email}")
+    public ResponseEntity<String> disableUserAccount(@PathVariable String email) {
+        userService.disableUserAccount(email);
+        return ResponseEntity.status(HttpStatus.OK).body("User account disabled successfully.");
+    }
+
+
 }
