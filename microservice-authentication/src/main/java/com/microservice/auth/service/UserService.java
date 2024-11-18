@@ -82,6 +82,7 @@ public class UserService {
 
     private UserEntity convertToEntity(UserDTO registerUserDTO) {
         UserEntity userEntity = modelMapper.map(registerUserDTO, UserEntity.class);
+        //userEntity.setPassword(passwordEncoder.encode(registerUserDTO.getPassword()));
         userEntity.setRole(UserEntity.Role.USER);
         userEntity.setEnabled(true);
         return userEntity;

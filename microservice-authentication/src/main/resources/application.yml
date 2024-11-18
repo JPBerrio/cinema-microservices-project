@@ -4,12 +4,17 @@ server:
 spring:
   application:
     name: microservice-authentication
+  security:
+    user:
+      enabled: false
+      name: ""
+      password: ""
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${URL}
-    username: ${USERNAME}
-    password: ${PASSWORD}
+    url: ${DATABASE_URL_AUTH}
+    username: ${USERNAME_AUTH}
+    password: ${PASSWORD_AUTH}
 
   jpa:
     hibernate:
@@ -17,3 +22,14 @@ spring:
       show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  logging:
+    level:
+      org.springframework.security: DEBUG
+      org.springframework.web: DEBUG
+      org.springframework.http: DEBUG
+      org.springframework.security.authentication: DEBUG
+      org.springframework.security.web: DEBUG
+      org.springframework.security.access: DEBUG
+      org.springframework.boot: DEBUG
+

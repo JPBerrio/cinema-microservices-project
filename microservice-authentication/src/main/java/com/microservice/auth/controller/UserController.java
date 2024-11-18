@@ -1,7 +1,6 @@
 package com.microservice.auth.controller;
 
 import com.microservice.auth.dto.ChangeRoleDTO;
-import com.microservice.auth.dto.UserDTO;
 import com.microservice.auth.model.UserEntity;
 import com.microservice.auth.service.UserService;
 import org.springframework.data.domain.Page;
@@ -10,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/admin")
 public class UserController {
 
     private final UserService userService;
@@ -48,29 +47,10 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO registerUserDTO) {
-        userService.registerUser(registerUserDTO);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
     @PutMapping("/change-role")
     public ResponseEntity<String> changeRoleToAdmin(@RequestBody ChangeRoleDTO changeRoleDTO) {
         userService.changeRoleToAdmin(changeRoleDTO.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body("Role changed to ADMIN successfully.");
     }
-
-    @PutMapping("/update/{email}")
-    public ResponseEntity<UserEntity> updateUser(@PathVariable String email, @RequestBody UserDTO userDTO) {
-        UserEntity updatedUser = userService.updateUser(email, userDTO);
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    @PutMapping("/disable-account/{email}")
-    public ResponseEntity<String> disableUserAccount(@PathVariable String email) {
-        userService.disableUserAccount(email);
-        return ResponseEntity.status(HttpStatus.OK).body("User account disabled successfully.");
-    }
-
 
 }
