@@ -14,14 +14,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import java.util.logging.Logger;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    // crea un logger
-    private final Logger logger = Logger.getLogger(SecurityConfig.class.getName());
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -37,7 +33,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/auth/user/**").hasRole("ADMIN")
                         .anyRequest().denyAll()
                 );
-        logger.info("perro hijueputa");
         return http.build();
     }
 
