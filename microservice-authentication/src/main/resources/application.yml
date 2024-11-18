@@ -12,9 +12,9 @@ spring:
 
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: ${DATABASE_URL_AUTH}
-    username: ${USERNAME_AUTH}
-    password: ${PASSWORD_AUTH}
+    url: jdbc:postgresql://${DATABASE_HOST:localhost}:${DATABASE_PORT:6543}/${DATABASE_NAME:postgresdb}
+    username: ${USERNAME_AUTH:user}
+    password: ${PASSWORD_AUTH:password}
 
   jpa:
     hibernate:
