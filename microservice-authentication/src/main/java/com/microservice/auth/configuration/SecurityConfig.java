@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -31,7 +32,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/user/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/auth/user/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/auth/user/**").hasRole("ADMIN")
-                        .anyRequest().denyAll()
+                        .anyRequest().authenticated()
                 );
         return http.build();
     }
@@ -45,4 +46,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

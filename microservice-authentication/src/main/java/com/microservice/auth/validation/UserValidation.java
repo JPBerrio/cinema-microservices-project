@@ -1,5 +1,6 @@
 package com.microservice.auth.validation;
 
+import com.microservice.auth.dto.LoginDTO;
 import com.microservice.auth.dto.UserDTO;
 import com.microservice.auth.exception.InvalidEmailException;
 import com.microservice.auth.exception.InvalidUserException;
@@ -39,6 +40,16 @@ public class UserValidation {
         if (userRepository.findByEmail(email) == null) {
             throw new UserNotFoundException("The user with email " + email + " does not exist.");
         }
+    }
+
+    public void validateLoginDTO(LoginDTO loginDTO) {
+        if (loginDTO.getEmail() == null || loginDTO.getEmail().isEmpty()) {
+            throw new InvalidUserException("Email must be different of null or empty.");
+        }
+        if (loginDTO.getPassword() == null || loginDTO.getPassword().isEmpty()) {
+            throw new InvalidUserException("Password must be different of null or empty.");
+        }
+        validateUserExistsByEmail(userRepository, loginDTO.getEmail());
     }
 
     public void validateIfUserIsAdmin(String email) {

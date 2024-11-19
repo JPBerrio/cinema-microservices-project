@@ -43,4 +43,15 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<ApiError> handleInvalidCredentials(InvalidCredentialsException exception) {
+        ApiError apiError = new ApiError(
+                HttpStatus.UNAUTHORIZED,
+                exception.getMessage(),
+                List.of("The credentials are invalid", exception.getMessage())
+        );
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
 }
