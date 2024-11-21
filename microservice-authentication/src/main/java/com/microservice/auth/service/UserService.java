@@ -3,7 +3,6 @@ package com.microservice.auth.service;
 import com.microservice.auth.configuration.JwtConfig;
 import com.microservice.auth.dto.LoginDTO;
 import com.microservice.auth.dto.UserDTO;
-import com.microservice.auth.exception.InvalidCredentialsException;
 import com.microservice.auth.model.UserEntity;
 import com.microservice.auth.repository.UserRepository;
 import com.microservice.auth.validation.UserValidation;
@@ -12,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,13 +102,15 @@ public class UserService {
 
     public String authenticateAndGenerateToken(LoginDTO loginDTO) {
         userValidation.validateLoginDTO(loginDTO);
-        UsernamePasswordAuthenticationToken login = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
-        try {
-            authenticationManager.authenticate(login);
-        } catch (Exception e) {
-            throw new InvalidCredentialsException("Your password is incorrect, verify and try again.");
-        }
 
-        return jwtConfig.createToken(loginDTO.getEmail());
+        UsernamePasswordAuthenticationToken login = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
+        Authentication authentication = authenticationManager.authenticate(login);
+
+        if (authentication.isAuthenticated()) {
+            return jwtConfig.createToken(loginDTO.getEmail(), getUserByEmail(loginDTO.getEmail()).getRole().toString());
+        }
+        else {
+            throw new RuntimeException("Authentication failed");
+        }
     }
 }

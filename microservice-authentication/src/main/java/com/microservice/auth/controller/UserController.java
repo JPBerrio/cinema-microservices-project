@@ -19,10 +19,10 @@ public class UserController {
     }
 
     @GetMapping("/all-users")
-    public ResponseEntity<Page<UserEntity>> getAllMovies(@RequestParam(defaultValue = "0") int page,
-                                                         @RequestParam(defaultValue = "10") int elements) {
-        Page<UserEntity> movies = userService.findAllUsers(page, elements);
-        return ResponseEntity.ok(movies);
+    public ResponseEntity<Page<UserEntity>> getAllUsers(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "10") int elements) {
+        Page<UserEntity> users = userService.findAllUsers(page, elements);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/search-by-email")
@@ -52,5 +52,4 @@ public class UserController {
         userService.changeRoleToAdmin(changeRoleDTO.getEmail());
         return ResponseEntity.status(HttpStatus.OK).body("Role changed to ADMIN successfully.");
     }
-
 }

@@ -13,43 +13,54 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JwtConfig {
 
-    private String SECRET_KEY;
-    private Algorithm ALGORITHM;
-
     @Value("${SECRET_WORD}")
-    public void setSecretKey(String secretKey) {
-        this.SECRET_KEY = secretKey;
-    }
+    private String secretKey;
+
+    private Algorithm algorithm;
 
     @PostConstruct
     public void init() {
-        this.ALGORITHM = Algorithm.HMAC256(SECRET_KEY);
+        if (secretKey == null || secretKey.isEmpty()) {
+            throw new IllegalArgumentException("The Secret cannot be null or empty");
+        }
+        this.algorithm = Algorithm.HMAC256(secretKey);
     }
 
-    public String createToken(String username) {
+    public String createToken(String email, String role) {
         return JWT.create()
-                .withSubject(username)
-                .withIssuer("auth-0")
+                .withSubject(email)
+                .withClaim("role", "ROLE_" + role)
+                .withIssuer("Authentication-Microservices")
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + TimeUnit.DAYS.toMillis(1)))
-                .sign(ALGORITHM);
+                .sign(algorithm);
     }
 
     public boolean isValid(String jwt) {
         try {
-            JWT.require(ALGORITHM)
+            JWT.require(algorithm)
                     .build()
                     .verify(jwt);
             return true;
         }catch (JWTVerificationException e) {
+            System.out.println("Invalid token: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
 
     public String getUsername(String jwt) {
-        return JWT.require(ALGORITHM)
+        return JWT.require(algorithm)
                 .build()
                 .verify(jwt)
                 .getSubject();
+    }
+
+    public String getClaim(String jwt, String claimName) {
+        return JWT.require(algorithm)
+                .build()
+                .verify(jwt)
+                .getClaim(claimName)
+                .asString();
     }
 }

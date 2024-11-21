@@ -20,9 +20,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginDTO loginDTO) {
-            String jwt = userService.authenticateAndGenerateToken(loginDTO);
-            return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, jwt).build();
+    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
+        String jwt = userService.authenticateAndGenerateToken(loginDTO);
+        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, jwt).build();
     }
 
     @PostMapping("/register")

@@ -3,6 +3,7 @@ package com.microservice.auth.service;
 import com.microservice.auth.model.UserEntity;
 import com.microservice.auth.repository.UserRepository;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,17 +24,17 @@ public class UserSecurityService implements UserDetailsService {
         UserEntity user = userRepository.findByEmail(email);
 
         if (user == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("User" + email + "not found");
         }
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                user.isEnabled(),
-                true,
-                true,
-                true,
-                AuthorityUtils.createAuthorityList("ROLE_" + user.getRole().name())
-        );
+        String roles = user.getRole().toString();
+
+        System.out.println("User role: " + user.getRole());
+
+        return User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(AuthorityUtils.createAuthorityList(roles))
+                .build();
     }
 }
