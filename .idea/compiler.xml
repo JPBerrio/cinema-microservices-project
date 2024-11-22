@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="microservice-eureka" />
         <module name="microservice-authentication" />
         <module name="microservice-movies" />
       </profile>
@@ -19,6 +20,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="cinema" options="-parameters" />
       <module name="microservice-authentication" options="-parameters" />
+      <module name="microservice-eureka" options="-parameters" />
       <module name="microservice-movies" options="-parameters" />
       <module name="movies" options="-parameters" />
     </option>
