@@ -1,5 +1,6 @@
 package com.microservice.auth.configuration;
 
+import com.microservice.auth.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ public class JwtFilterConfig extends OncePerRequestFilter {
         //Cargar usuario
         String username = jwtConfig.getUsername(jwt);
         User user = (User) userDetailsService.loadUserByUsername(username);
+
         String role = jwtConfig.getClaim(jwt, "role");
 
         List<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(role);

@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +36,10 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtConfig = jwtConfig;
+    }
+
+    private String getAuthenticatedUserEmail() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
     public Page<UserEntity> findAllUsers(int page, int size) {
@@ -77,16 +82,16 @@ public class UserService {
     }
 
     @Transactional
-    public UserEntity updateUser(String email, UserDTO userDTO) {
-        userValidation.validateUserExistsByEmail(userRepository, email);
+    public UserEntity updateUser(UserDTO userDTO) {
+        String email = getAuthenticatedUserEmail();
         UserEntity existingUser = userRepository.findByEmail(email);
-        modelMapper.map(userDTO, existingUser);
+        userValidation.validateUpdateUser(userDTO, existingUser);
         return userRepository.save(existingUser);
     }
 
     @Transactional
-    public UserEntity disableUserAccount(String email) {
-        userValidation.validateUserExistsByEmail(userRepository, email);
+    public UserEntity disableUserAccount() {
+        String email = getAuthenticatedUserEmail();
         UserEntity existingUser = userRepository.findByEmail(email);
         existingUser.setEnabled(false);
         return userRepository.save(existingUser);

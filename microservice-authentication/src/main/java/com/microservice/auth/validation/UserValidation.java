@@ -8,17 +8,22 @@ import com.microservice.auth.exception.UserNotFoundException;
 import com.microservice.auth.model.UserEntity;
 import com.microservice.auth.repository.UserRepository;
 import jakarta.validation.ValidationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
+
+import static org.apache.commons.lang3.ObjectUtils.isEmpty;
 
 @Component
 public class UserValidation {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserValidation(UserRepository userRepository) {
+    public UserValidation(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void validatePageAndSize(int page, int size) {
@@ -42,6 +47,13 @@ public class UserValidation {
         }
     }
 
+    public void validateEnabledUser(LoginDTO loginDTO) {
+        UserEntity userEntity = userRepository.findByEmail(loginDTO.getEmail());
+        if (!userEntity.isEnabled()) {
+            throw new InvalidUserException("The user with email " + loginDTO.getEmail() + " is disabled.");
+        }
+    }
+
     public void validateLoginDTO(LoginDTO loginDTO) {
         if (loginDTO.getEmail() == null || loginDTO.getEmail().isEmpty()) {
             throw new InvalidUserException("Email must be different of null or empty.");
@@ -50,6 +62,7 @@ public class UserValidation {
             throw new InvalidUserException("Password must be different of null or empty.");
         }
         validateUserExistsByEmail(userRepository, loginDTO.getEmail());
+        validateEnabledUser(loginDTO);
     }
 
     public void validateIfUserIsAdmin(String email) {
@@ -100,5 +113,28 @@ public class UserValidation {
             throw new InvalidUserException("Phone must have between 10 and 15 characters.");
         }
         validateEmail(registerUserDTO.getEmail());
+    }
+
+    public void validateUpdateUser(UserDTO userDTO, UserEntity existingUser) {
+        if (userDTO == null){
+            throw new InvalidUserException("User must be different of null.");
+        }
+        if (userDTO.getUsername() != null && !userDTO.getUsername().isEmpty()) {
+            existingUser.setUsername(userDTO.getUsername());
+        }
+        if (userDTO.getLastName() != null && !userDTO.getLastName().isEmpty()) {
+            existingUser.setLastName(userDTO.getLastName());
+        }
+        if (userDTO.getPhone() != null && !userDTO.getPhone().isEmpty()) {
+            existingUser.setPhone(userDTO.getPhone());
+        }
+        if (userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
+            String encodePassword = passwordEncoder.encode(userDTO.getPassword());
+            existingUser.setPassword(encodePassword);
+        }
+        if (userDTO.getEmail() != null && !userDTO.getEmail().isEmpty() && !userDTO.getEmail().equals(existingUser.getEmail())) {
+            validateEmail(userDTO.getEmail());
+            existingUser.setEmail(userDTO.getEmail());
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.microservice.auth.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = new ApiError(
                 HttpStatus.BAD_REQUEST,
                 exception.getMessage(),
-                List.of("something went wrong when trying to create the user", exception.getMessage())
+                List.of("something went wrong when trying to manage the user", exception.getMessage())
         );
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
@@ -54,4 +55,5 @@ public class GlobalExceptionHandler {
         );
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
+
 }

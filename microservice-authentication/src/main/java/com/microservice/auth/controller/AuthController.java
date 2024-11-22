@@ -31,15 +31,15 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PutMapping("/update/{email}")
-    public ResponseEntity<UserEntity> updateUser(@PathVariable String email, @RequestBody UserDTO userDTO) {
-        UserEntity updatedUser = userService.updateUser(email, userDTO);
+    @PutMapping("/update")
+    public ResponseEntity<UserEntity> updateUser(@RequestBody UserDTO userDTO) {
+        UserEntity updatedUser = userService.updateUser(userDTO);
         return ResponseEntity.ok(updatedUser);
     }
 
-    @PutMapping("/disable-account/{email}")
-    public ResponseEntity<String> disableUserAccount(@PathVariable String email) {
-        userService.disableUserAccount(email);
+    @PutMapping("/disable-account")
+    public ResponseEntity<String> disableUserAccount() {
+        userService.disableUserAccount();
         return ResponseEntity.status(HttpStatus.OK).body("User account disabled successfully.");
     }
 }
