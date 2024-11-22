@@ -7,9 +7,10 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="microservice-showtime" />
+        <module name="microservice-movies" />
         <module name="microservice-eureka" />
         <module name="microservice-authentication" />
-        <module name="microservice-movies" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -22,6 +23,7 @@
       <module name="microservice-authentication" options="-parameters" />
       <module name="microservice-eureka" options="-parameters" />
       <module name="microservice-movies" options="-parameters" />
+      <module name="microservice-showtime" options="-parameters" />
       <module name="movies" options="-parameters" />
     </option>
   </component>
