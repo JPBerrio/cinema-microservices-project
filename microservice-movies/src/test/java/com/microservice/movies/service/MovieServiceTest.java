@@ -1,5 +1,6 @@
 package com.microservice.movies.service;
 
+import com.microservice.movies.dto.MovieWithGenreDTO;
 import com.microservice.movies.exception.GenreNotFoundException;
 import com.microservice.movies.exception.InvalidMovieEntityException;
 import com.microservice.movies.exception.MovieNotFoundException;
@@ -51,7 +52,7 @@ public class MovieServiceTest {
         when(movieRepository.findAll(pageRequest)).thenReturn(pageResult);
 
         // When
-        Page<MovieEntity> result = movieService.findAllMovies(page, size);
+        Page<MovieWithGenreDTO> result = movieService.findAllMovies(page, size);
 
         // Then
         assertNotNull(result);
@@ -92,7 +93,7 @@ public class MovieServiceTest {
         when(movieRepository.findAll(PageRequest.of(page, size))).thenReturn(emptyPageResult);
 
         // When
-        Page<MovieEntity> result = movieService.findAllMovies(page, size);
+        Page<MovieWithGenreDTO> result = movieService.findAllMovies(page, size);
 
         // Then
         assertNotNull(result);

@@ -1,6 +1,8 @@
 package com.microservice.movies.service;
 
+import com.microservice.movies.dto.MovieWithGenreDTO;
 import com.microservice.movies.exception.GenreNotFoundException;
+import com.microservice.movies.model.GenreEntity;
 import com.microservice.movies.model.MovieEntity;
 import com.microservice.movies.repository.MovieRepository;
 import com.microservice.movies.validation.MovieValidation;
@@ -21,9 +23,20 @@ public class MovieService {
         this.movieValidation = movieValidation;
     }
 
-    public Page<MovieEntity> findAllMovies(int page, int size) {
+    public Page<MovieWithGenreDTO> findAllMovies(int page, int size) {
         movieValidation.validatePageAndSize(page, size);
-        return movieRepository.findAll(PageRequest.of(page, size));
+        Page<MovieEntity> movies = movieRepository.findAll(PageRequest.of(page, size));
+
+        return movies.map(movieEntity -> {
+           MovieWithGenreDTO dto = new MovieWithGenreDTO();
+           dto.setIdMovie(movieEntity.getIdMovie());
+           dto.setTitle(movieEntity.getTitle());
+           dto.setDescription(movieEntity.getDescription());
+           dto.setDuration(movieEntity.getDuration());
+           dto.setImageUrl(movieEntity.getImageUrl());
+           dto.setGenreName(movieEntity.getGenreEntity().getNameGenre());
+           return dto;
+        });
     }
 
     public MovieEntity findMovieById(int idMovie) {

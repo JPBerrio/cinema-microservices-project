@@ -1,5 +1,6 @@
 package com.microservice.movies.controller;
 
+import com.microservice.movies.dto.MovieWithGenreDTO;
 import com.microservice.movies.model.MovieEntity;
 import com.microservice.movies.service.MovieService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,9 +30,9 @@ public class MovieController {
     @Operation(summary = "Get all movies",
                description = "Get all movies from the database",
                tags = {"Get"})
-    public ResponseEntity<Page<MovieEntity>> getAllMovies(@RequestParam(defaultValue = "0") int page,
-                                                          @RequestParam(defaultValue = "10") int elements) {
-        Page<MovieEntity> movies = movieService.findAllMovies(page, elements);
+    public ResponseEntity<Page<MovieWithGenreDTO>> getAllMovies(@RequestParam(defaultValue = "0") int page,
+                                                                @RequestParam(defaultValue = "10") int elements) {
+        Page<MovieWithGenreDTO> movies = movieService.findAllMovies(page, elements);
         return ResponseEntity.ok(movies);
     }
 
