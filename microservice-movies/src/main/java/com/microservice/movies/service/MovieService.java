@@ -40,7 +40,6 @@ public class MovieService {
 
     public MovieWithGenreDTO findMovieById(int idMovie) {
         movieValidation.validateIdMovie(idMovie);
-        movieValidation.validateIdMovie(idMovie);
         MovieEntity movieEntity = movieRepository.findByIdMovie(idMovie);
         MovieWithGenreDTO dto = new MovieWithGenreDTO();
         dto.setIdMovie(movieEntity.getIdMovie());
