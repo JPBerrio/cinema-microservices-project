@@ -40,7 +40,7 @@ public class MovieController {
     @Operation(summary = "Get movie by id",
                description = "Get a movie by its id",
                tags = {"Get"})
-    public ResponseEntity <MovieEntity> getMovieById(@PathVariable int idMovie) {
+    public ResponseEntity <MovieWithGenreDTO> getMovieById(@PathVariable int idMovie) {
         return ResponseEntity.ok(movieService.findMovieById(idMovie));
     }
 
@@ -70,7 +70,7 @@ public class MovieController {
         return movies.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(movies);
     }
 
-    @PostMapping("/add-movie")
+    @PostMapping(value = "/add-movie")
     @Operation(summary = "Add a movie",
                description = "Add a movie to the database",
                tags = {"Post"},

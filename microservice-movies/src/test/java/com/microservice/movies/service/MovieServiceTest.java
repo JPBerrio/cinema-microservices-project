@@ -124,7 +124,7 @@ public class MovieServiceTest {
         when(movieRepository.findByIdMovie(idMovie)).thenReturn(movie);
 
         // Then
-        MovieEntity result = movieService.findMovieById(idMovie);
+        MovieWithGenreDTO result = movieService.findMovieById(idMovie);
 
         // Given
         assertEquals("The Dark Knight", result.getTitle());

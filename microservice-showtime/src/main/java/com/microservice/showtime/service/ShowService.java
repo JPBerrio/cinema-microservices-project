@@ -5,6 +5,7 @@ import com.microservice.showtime.dto.MovieResponseDTO;
 import com.microservice.showtime.model.SeatEntity;
 import com.microservice.showtime.model.ShowEntity;
 import com.microservice.showtime.repository.ShowRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
